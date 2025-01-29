@@ -1,4 +1,4 @@
-const posts = require("../data/posts"); // Importiamo i dati dei post
+const posts = require("../routers/posts"); // Importiamo i dati dei post
 
 // INDEX: Restituisce tutti i post (con filtro per tag opzionale)
 const getAllPosts = (req, res) => {
@@ -27,16 +27,55 @@ const getPostById = (req, res) => {
 };
 
 // CREATE: Conferma la creazione di un nuovo post
+
+// Aggiunge un nuovo post
 const createPost = (req, res) => {
-  res.send("Creazione di un nuovo post");
+  console.log("Dati ricevuti:", req.body); // Stampiamo i dati nel terminale
+
+  const { title, content, tags, image } = req.body;
+
+  if (!title || !content) {
+    return res
+      .status(400)
+      .json({ message: "Titolo e contenuto sono obbligatori" });
+  }
+
+  const newPost = {
+    id: posts.length ? posts[posts.length - 1].id + 1 : 1, // Generiamo un ID automatico
+    title,
+    content,
+    tags: tags || [],
+    image: image || "https://example.com/default.jpg",
+  };
+
+  posts.push(newPost);
+  res.status(201).json(newPost);
 };
 
 // UPDATE: Conferma l'aggiornamento di un post
 const updatePost = (req, res) => {
-  const postId = req.params.id;
-  res.send(`Aggiornamento del post ${postId}`);
-};
+  const postId = parseInt(req.params.id);
+  const { title, content, tags, image } = req.body;
 
+  const postIndex = posts.findIndex((p) => p.id === postId);
+
+  if (postIndex === -1) {
+    return res
+      .status(404)
+      .json({ message: `Post con ID ${postId} non trovato` });
+  }
+
+  // Aggiorniamo solo i campi forniti nel body
+  posts[postIndex] = {
+    ...posts[postIndex],
+    title: title || posts[postIndex].title,
+    content: content || posts[postIndex].content,
+    tags: tags || posts[postIndex].tags,
+    image: image || posts[postIndex].image,
+  };
+
+  res.json(posts[postIndex]);
+};
 // DELETE: Cancella un post e aggiorna la lista
 const deletePost = (req, res) => {
   const postId = parseInt(req.params.id);
