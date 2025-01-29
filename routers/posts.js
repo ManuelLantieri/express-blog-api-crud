@@ -1,27 +1,35 @@
 const express = require("express");
 const router = express.Router();
-const {
-  getAllPosts,
-  getPostById,
-  createPost,
-  updatePost,
-  deletePost,
-} = require("../controllers/postsController");
+const postsController = require("../controllers/postsController");
 
-// Index route
-router.get("/", getAllPosts);
+const posts = [
+  {
+    id: 1,
+    title: "Primo Post",
+    content: "Contenuto del primo post",
+    tags: ["tech", "news"],
+  },
+  {
+    id: 2,
+    title: "Secondo Post",
+    content: "Contenuto del secondo post",
+    tags: ["lifestyle"],
+  },
+  {
+    id: 3,
+    title: "Terzo Post",
+    content: "Contenuto del terzo post",
+    tags: ["tech"],
+  },
+];
 
-// Show route
-router.get("/:id", getPostById);
+module.exports = posts;
 
-// Create route
-router.post("/", createPost);
-
-// Update route
-router.put("/:id", updatePost);
-
-// Delete route
-router.delete("/:id", deletePost);
+// Definizione delle rotte
+router.get("/", postsController.getAllPosts); // Index
+router.get("/:id", postsController.getPostById); // Show
+router.post("/", postsController.createPost); // Create
+router.put("/:id", postsController.updatePost); // Update
+router.delete("/:id", postsController.deletePost); // Delete
 
 module.exports = router;
-
